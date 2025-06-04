@@ -1,0 +1,35 @@
+networks:
+  app:
+    driver: bridge
+
+services:
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: ./Dockerfile.back
+    ports: 
+      - 3000:3000
+    environment: 
+      - HTTP_PORT=3000
+      - MONGO_URL=mongodb+srv://ilyazyablov:vdI0aOdOuhkLyfzC@diplom.kakstbi.mongodb.net/?retryWrites=true&w=majority
+      - JWT_SECRET=secret
+      - JWT_EXPIRES=3d
+    networks:
+      - app
+
+  frontend:
+    build: 
+      context: ./frontend
+      dockerfile: ./Dockerfile.front
+    ports: 
+      - 5173:5173
+    volumes:
+      - ./frontend:/app
+    tty: true
+    environment: 
+      - VITE_MAIN_URL=http://localhost:3000/api
+      - VITE_SERVER_URL=http://localhost:3000
+    depends_on:
+      - backend
+    networks:
+      - app
